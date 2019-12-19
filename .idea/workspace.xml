@@ -1,0 +1,864 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="07deb787-b8f0-4855-a908-bdc2657584bd" name="Default Changelist" comment="" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_in_test_04_gui_manage_py.coverage" NAME="pytest in test_04_gui_manage.py Coverage Results" MODIFIED="1573701148175" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_03_nontax_page_TestNonTax_test01_title_name.coverage" NAME="pytest for test_03_nontax_page.TestNonTax.test01_title_name Coverage Results" MODIFIED="1574650999894" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_05_ad_page_TestAd_test03_add_ad.coverage" NAME="pytest for test_05_ad_page.TestAd.test03_add_ad Coverage Results" MODIFIED="1574648563823" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_03_nontax_page_TestNonTax_test07_del_tax_unit.coverage" NAME="pytest for test_03_nontax_page.TestNonTax.test07_del_tax_unit Coverage Results" MODIFIED="1573118591666" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_in_test_02_home_page_py.coverage" NAME="pytest in test_02_home_page.py Coverage Results" MODIFIED="1574650162022" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_05_ad_page_TestAd_test04_del_ad.coverage" NAME="pytest for test_05_ad_page.TestAd.test04_del_ad Coverage Results" MODIFIED="1574648546847" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_03_nontax_page_TestNonTax_test02_add_tax_manage.coverage" NAME="pytest for test_03_nontax_page.TestNonTax.test02_add_tax_manage Coverage Results" MODIFIED="1574651015370" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_04_gui_manage_TestShow_test03_del_show_module.coverage" NAME="pytest for test_04_gui_manage.TestShow.test03_del_show_module Coverage Results" MODIFIED="1573536170106" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_04_gui_manage_TestShow_test03_del_gui_module.coverage" NAME="pytest for test_04_gui_manage.TestShow.test03_del_gui_module Coverage Results" MODIFIED="1573701104582" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_03_nontax_page_TestNonTax_test04_course_management_add_code.coverage" NAME="pytest for test_03_nontax_page.TestNonTax.test04_course_management_add_code Coverage Results" MODIFIED="1573116874438" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_04_show_manage_TestShow_test01_title_name.coverage" NAME="pytest for test_04_show_manage.TestShow.test01_title_name Coverage Results" MODIFIED="1573528137626" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$api_objects.coverage" NAME="api_objects Coverage Results" MODIFIED="1574647091717" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Api" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_01_login_TestLogin_test02_login_unnomal.coverage" NAME="pytest for test_01_login.TestLogin.test02_login_unnomal Coverage Results" MODIFIED="1571808691605" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_TestLogin1_test01_group_login_success.coverage" NAME="pytest for test.TestLogin1.test01_group_login_success Coverage Results" MODIFIED="1572236835712" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_05_ad_page_TestAd_test01_title_name.coverage" NAME="pytest for test_05_ad_page.TestAd.test01_title_name Coverage Results" MODIFIED="1574046982123" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_06_bank_page_TestBank_test02_add_bank.coverage" NAME="pytest for test_06_bank_page.TestBank.test02_add_bank Coverage Results" MODIFIED="1574414046443" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$main.coverage" NAME="main Coverage Results" MODIFIED="1574736981356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_02_home_page_TestHome_test03_quit_login.coverage" NAME="pytest for test_02_home_page.TestHome.test03_quit_login Coverage Results" MODIFIED="1573011189604" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_04_show_manage_TestShow_test02_add_show_module.coverage" NAME="pytest for test_04_show_manage.TestShow.test02_add_show_module Coverage Results" MODIFIED="1573528245541" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_06_bank_page_TestBank_test01_title_name.coverage" NAME="pytest for test_06_bank_page.TestBank.test01_title_name Coverage Results" MODIFIED="1574391584754" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_01_login_TestLogin_test01_group_login_success.coverage" NAME="pytest for test_01_login.TestLogin.test01_group_login_success Coverage Results" MODIFIED="1572236732821" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_03_nontax_page_TestNonTax_test03_del_tax_manage.coverage" NAME="pytest for test_03_nontax_page.TestNonTax.test03_del_tax_manage Coverage Results" MODIFIED="1573095733900" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_04_gui_manage_TestShow_test02_add_show_module.coverage" NAME="pytest for test_04_gui_manage.TestShow.test02_add_show_module Coverage Results" MODIFIED="1574648401463" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_05_ad_page_TestAd_test02_search_ad.coverage" NAME="pytest for test_05_ad_page.TestAd.test02_search_ad Coverage Results" MODIFIED="1574418138304" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_04_gui_manage_TestShow_test04_add_gui_item.coverage" NAME="pytest for test_04_gui_manage.TestShow.test04_add_gui_item Coverage Results" MODIFIED="1574648482072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_03_nontax_page_TestNonTax_test05_course_management_del_code.coverage" NAME="pytest for test_03_nontax_page.TestNonTax.test05_course_management_del_code Coverage Results" MODIFIED="1573118409409" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_04_gui_manage_TestShow_test05_del_gui_item.coverage" NAME="pytest for test_04_gui_manage.TestShow.test05_del_gui_item Coverage Results" MODIFIED="1573702066986" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_01_login_TestLogin_test01_login_success.coverage" NAME="pytest for test_01_login.TestLogin.test01_login_success Coverage Results" MODIFIED="1571807836074" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_02_home_page_TestHome_test02_merchant_data.coverage" NAME="pytest for test_02_home_page.TestHome.test02_merchant_data Coverage Results" MODIFIED="1571811454591" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_03_nontax_page_TestNonTax_test06_add_tax_unit.coverage" NAME="pytest for test_03_nontax_page.TestNonTax.test06_add_tax_unit Coverage Results" MODIFIED="1573117105619" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_in_test_03_nontax_page_py.coverage" NAME="pytest in test_03_nontax_page.py Coverage Results" MODIFIED="1574651041196" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_01_login_TestLogin_test03_login_unnomal.coverage" NAME="pytest for test_01_login.TestLogin.test03_login_unnomal Coverage Results" MODIFIED="1571808706820" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_TestLogin1_test01_group_login_success__1_.coverage" NAME="pytest for test.TestLogin1.test01_group_login_success (1) Coverage Results" MODIFIED="1572241794270" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$test.coverage" NAME="test Coverage Results" MODIFIED="1573020879033" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Api" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_02_home_page_TestHome_test_pay_data.coverage" NAME="pytest for test_02_home_page.TestHome.test_pay_data Coverage Results" MODIFIED="1571810810923" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_in_test_06_bank_page_py.coverage" NAME="pytest in test_06_bank_page.py Coverage Results" MODIFIED="1574652474421" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_in_test_01_login_py.coverage" NAME="pytest in test_01_login.py Coverage Results" MODIFIED="1574649375520" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_04_gui_manage_TestShow_test01_title_name.coverage" NAME="pytest for test_04_gui_manage.TestShow.test01_title_name Coverage Results" MODIFIED="1573547815434" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+    <SUITE FILE_PATH="coverage/Web_framework$pytest_for_test_01_login_TestLogin_test01_boss_login_success.coverage" NAME="pytest for test_01_login.TestLogin.test01_boss_login_success Coverage Results" MODIFIED="1574648947341" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TestCases" />
+  </component>
+  <component name="FUSProjectUsageTrigger">
+    <session id="-817410247">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="12" />
+          <entry key="project.open.time.0" value="1" />
+          <entry key="project.open.time.1" value="3" />
+          <entry key="project.open.time.15" value="1" />
+          <entry key="project.open.time.2" value="1" />
+          <entry key="project.open.time.3" value="2" />
+          <entry key="project.open.time.7" value="5" />
+          <entry key="project.open.time.8" value="3" />
+          <entry key="project.open.time.9" value="1" />
+          <entry key="project.opened" value="17" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="conf" value="4" />
+          <entry key="html" value="1" />
+          <entry key="ini" value="4" />
+          <entry key="log" value="5" />
+          <entry key="png" value="12" />
+          <entry key="py" value="346" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="HTML" value="1" />
+          <entry key="Image" value="12" />
+          <entry key="Ini" value="4" />
+          <entry key="PLAIN_TEXT" value="9" />
+          <entry key="Python" value="346" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="dummy" value="69" />
+          <entry key="log" value="2" />
+          <entry key="py" value="24819" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="PLAIN_TEXT" value="71" />
+          <entry key="Python" value="24819" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TestCases/test_02_home_page.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="156">
+              <caret line="7" column="15" lean-forward="true" selection-start-line="7" selection-start-column="15" selection-end-line="7" selection-end-column="15" />
+              <folding>
+                <element signature="e#24#37#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TestCases/test_03_nontax_page.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="416">
+              <caret line="17" column="12" lean-forward="true" selection-start-line="17" selection-start-column="12" selection-end-line="17" selection-end-column="12" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/PageLocators/login_locators.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="312">
+              <caret line="12" column="58" selection-start-line="12" selection-start-column="47" selection-end-line="12" selection-end-column="58" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/PageLocators/gui_manage_locators.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="520">
+              <caret line="29" column="61" selection-start-line="29" selection-start-column="52" selection-end-line="29" selection-end-column="61" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/PageObjects/home_page.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="832">
+              <caret line="34" column="43" selection-start-line="34" selection-start-column="43" selection-end-line="34" selection-end-column="43" />
+              <folding>
+                <element signature="e#24#35#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Common/BasePage.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="806">
+              <caret line="40" column="44" lean-forward="true" selection-start-line="40" selection-start-column="44" selection-end-line="40" selection-end-column="44" />
+              <folding>
+                <element signature="e#24#33#0" expanded="true" />
+                <marker date="1574061452515" expanded="true" signature="426:431" ph="..." />
+                <marker date="1574061452515" expanded="true" signature="543:548" ph="..." />
+                <marker date="1574061452515" expanded="true" signature="829:1248" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Api/test.py">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Api/api_objects.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="312">
+              <caret line="13" column="50" lean-forward="true" selection-start-line="13" selection-start-column="50" selection-end-line="13" selection-end-column="50" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/main.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="156">
+              <caret line="7" column="50" selection-start-line="7" selection-start-column="50" selection-end-line="7" selection-end-column="50" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TestDatas/login_datas.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="52">
+              <caret line="2" column="15" lean-forward="true" selection-start-line="2" selection-start-column="15" selection-end-line="2" selection-end-column="15" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>non_tax</find>
+      <find>hl.non_tax</find>
+      <find>//p[contains(@class,'el-message__content')]</find>
+    </findStrings>
+    <replaceStrings>
+      <replace />
+      <replace>hl.non_tax_menu</replace>
+    </replaceStrings>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/Common/Conf.py" />
+        <option value="$PROJECT_DIR$/Common/excel.py" />
+        <option value="$PROJECT_DIR$/TestDatas/Common_Data.py" />
+        <option value="$PROJECT_DIR$/TestDatas/home_page_datas.py" />
+        <option value="$PROJECT_DIR$/TestCases/common.py" />
+        <option value="$PROJECT_DIR$/PageObjects/common.py" />
+        <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/PageLocators/login_locators.py" />
+        <option value="$PROJECT_DIR$/PageObjects/login_page.py" />
+        <option value="$PROJECT_DIR$/Common/LOG.py" />
+        <option value="$PROJECT_DIR$/TestDatas/login_datas.py" />
+        <option value="$PROJECT_DIR$/PageObjects/non_tax_manage.py" />
+        <option value="$PROJECT_DIR$/Api/test.py" />
+        <option value="$PROJECT_DIR$/PageObjects/non_tax_manage_page.py" />
+        <option value="$PROJECT_DIR$/TestDatas/show_manage_datas.py" />
+        <option value="$PROJECT_DIR$/TestCases/test_04_show_manage.py" />
+        <option value="$PROJECT_DIR$/PageLocators/show_manage_locators.py" />
+        <option value="$PROJECT_DIR$/PageObjects/show_manage_page.py" />
+        <option value="$PROJECT_DIR$/PageLocators/gui_manage_locators.py" />
+        <option value="$PROJECT_DIR$/PageLocators/home_page_locators.py" />
+        <option value="$PROJECT_DIR$/TestCases/test05_ad_page.py" />
+        <option value="$PROJECT_DIR$/Common/MYSQL.py" />
+        <option value="$PROJECT_DIR$/Common/BasePage.py" />
+        <option value="$PROJECT_DIR$/PageLocators/ad_locators.py" />
+        <option value="$PROJECT_DIR$/PageObjects/ad_page.py" />
+        <option value="$PROJECT_DIR$/TestCases/test_05_ad_page.py" />
+        <option value="$PROJECT_DIR$/TestCases/test_04_gui_manage.py" />
+        <option value="$PROJECT_DIR$/Common/LOAD_FILE.py" />
+        <option value="$PROJECT_DIR$/PageLocators/bank_page_locators.py" />
+        <option value="$PROJECT_DIR$/TestDatas/bank_page_datas.py" />
+        <option value="$PROJECT_DIR$/TestCases/test_06_bank_page.py" />
+        <option value="$PROJECT_DIR$/Outputs/logs/web_log.log" />
+        <option value="$PROJECT_DIR$/PageObjects/bank_page.py" />
+        <option value="$PROJECT_DIR$/PageLocators/non_tax_locators.py" />
+        <option value="$PROJECT_DIR$/TestDatas/tax_manage_datas.py" />
+        <option value="$PROJECT_DIR$/PageObjects/gui_manage_page.py" />
+        <option value="$PROJECT_DIR$/PageObjects/home_page.py" />
+        <option value="$PROJECT_DIR$/TestCases/test_01_login.py" />
+        <option value="$PROJECT_DIR$/TestCases/test_02_home_page.py" />
+        <option value="$PROJECT_DIR$/TestCases/test_03_nontax_page.py" />
+        <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/TestDatas/ad_page_datas.py" />
+        <option value="$PROJECT_DIR$/TestCases/conftest.py" />
+        <option value="$PROJECT_DIR$/Common/1.py" />
+        <option value="$PROJECT_DIR$/Api/Api_objects1.py" />
+        <option value="$PROJECT_DIR$/Api/api_objects.py" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="7">
+    <option name="x" value="561" />
+    <option name="y" value="202" />
+    <option name="width" value="1135" />
+    <option name="height" value="616" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="Boss_Web_framework" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Web_framework" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Boss_Web_framework" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Web_framework" type="462c0819:PsiDirectoryNode" />
+              <item name="PageLocators" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="D:/Merchant_Web_framework" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="fileTemplates" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Web_framework\TestCases" />
+      <recent name="D:\Web_framework" />
+      <recent name="D:\Web_framework\Common" />
+      <recent name="D:\Web_framework\Configs" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Web_framework\PageObjects" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.main">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Boss_Web_framework" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for test_03_nontax_page.TestNonTax.test01_title_name" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="Boss_Web_framework" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TestCases" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_03_nontax_page.TestNonTax.test01_title_name&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest for test_03_nontax_page.TestNonTax.test02_add_tax_manage" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="Boss_Web_framework" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TestCases" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_03_nontax_page.TestNonTax.test02_add_tax_manage&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest in test_03_nontax_page.py" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="Boss_Web_framework" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TestCases" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/TestCases/test_03_nontax_page.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest in test_06_bank_page.py" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="Boss_Web_framework" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TestCases" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/TestCases/test_06_bank_page.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python tests.pytest for test_03_nontax_page.TestNonTax.test01_title_name" />
+      <item itemvalue="Python tests.pytest for test_03_nontax_page.TestNonTax.test02_add_tax_manage" />
+      <item itemvalue="Python tests.pytest in test_03_nontax_page.py" />
+      <item itemvalue="Python tests.pytest in test_06_bank_page.py" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python tests.pytest in test_06_bank_page.py" />
+        <item itemvalue="Python tests.pytest in test_03_nontax_page.py" />
+        <item itemvalue="Python tests.pytest for test_03_nontax_page.TestNonTax.test02_add_tax_manage" />
+        <item itemvalue="Python tests.pytest for test_03_nontax_page.TestNonTax.test01_title_name" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="07deb787-b8f0-4855-a908-bdc2657584bd" name="Default Changelist" comment="" />
+      <created>1571629013879</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1571629013879</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TestHistory">
+    <history-entry file="pytest_in_test_02_home_page_py - 2019.11.25 at 10h 49m 32s.xml">
+      <configuration name="pytest in test_02_home_page.py" configurationId="tests" />
+    </history-entry>
+    <history-entry file="pytest_for_test_03_nontax_page_TestNonTax_test01_title_name - 2019.11.25 at 10h 59m 23s.xml">
+      <configuration name="pytest for test_03_nontax_page.TestNonTax.test01_title_name" configurationId="tests" />
+    </history-entry>
+    <history-entry file="pytest_for_test_03_nontax_page_TestNonTax_test01_title_name - 2019.11.25 at 11h 02m 36s.xml">
+      <configuration name="pytest for test_03_nontax_page.TestNonTax.test01_title_name" configurationId="tests" />
+    </history-entry>
+    <history-entry file="pytest_for_test_03_nontax_page_TestNonTax_test01_title_name - 2019.11.25 at 11h 02m 52s.xml">
+      <configuration name="pytest for test_03_nontax_page.TestNonTax.test01_title_name" configurationId="tests" />
+    </history-entry>
+    <history-entry file="pytest_for_test_03_nontax_page_TestNonTax_test01_title_name - 2019.11.25 at 11h 03m 14s.xml">
+      <configuration name="pytest for test_03_nontax_page.TestNonTax.test01_title_name" configurationId="tests" />
+    </history-entry>
+    <history-entry file="pytest_for_test_03_nontax_page_TestNonTax_test01_title_name - 2019.11.25 at 11h 03m 25s.xml">
+      <configuration name="pytest for test_03_nontax_page.TestNonTax.test01_title_name" configurationId="tests" />
+    </history-entry>
+    <history-entry file="pytest_for_test_03_nontax_page_TestNonTax_test02_add_tax_manage - 2019.11.25 at 11h 03m 50s.xml">
+      <configuration name="pytest for test_03_nontax_page.TestNonTax.test02_add_tax_manage" configurationId="tests" />
+    </history-entry>
+    <history-entry file="pytest_in_test_03_nontax_page_py - 2019.11.25 at 11h 04m 55s.xml">
+      <configuration name="pytest in test_03_nontax_page.py" configurationId="tests" />
+    </history-entry>
+    <history-entry file="pytest_in_test_06_bank_page_py - 2019.11.25 at 11h 26m 44s.xml">
+      <configuration name="pytest in test_06_bank_page.py" configurationId="tests" />
+    </history-entry>
+    <history-entry file="pytest_in_test_06_bank_page_py - 2019.11.25 at 11h 28m 02s.xml">
+      <configuration name="pytest in test_06_bank_page.py" configurationId="tests" />
+    </history-entry>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="69" y="-8" width="1859" height="1216" extended-state="7" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15730962" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.2650046" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info anchor="bottom" id="Terminal" order="11" />
+      <window_info anchor="bottom" id="Python Console" order="12" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="SciView" order="3" />
+      <window_info anchor="right" id="Database" order="4" />
+    </layout>
+    <layout-to-restore>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13507505" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.1421976" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info anchor="bottom" id="Terminal" order="11" />
+      <window_info anchor="bottom" id="Python Console" order="12" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="SciView" order="3" />
+      <window_info anchor="right" id="Database" order="4" />
+    </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://D:/Python37/Lib/site-packages/selenium/webdriver/remote/errorhandler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="328">
+          <caret line="241" selection-start-line="241" selection-end-line="241" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Python37/Lib/site-packages/selenium/webdriver/remote/webdriver.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="487">
+          <caret line="320" selection-start-line="320" selection-end-line="320" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Outputs/screenshots/2019-11-18 15-14-47_状态变换.png" />
+    <entry file="file://$PROJECT_DIR$/PageLocators/ad_locators.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="78">
+          <caret line="12" column="82" lean-forward="true" selection-start-line="12" selection-start-column="62" selection-end-line="12" selection-end-column="82" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Python37/Lib/random.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="474">
+          <caret line="285" column="36" lean-forward="true" selection-start-line="285" selection-start-column="36" selection-end-line="285" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Python37/Lib/site-packages/selenium/webdriver/common/action_chains.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="786">
+          <caret line="287" column="40" lean-forward="true" selection-start-line="287" selection-start-column="40" selection-end-line="287" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/LOAD_FILE.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="104">
+          <caret line="5" column="19" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/MYSQL.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="596">
+          <caret line="27" column="25" selection-start-line="27" selection-start-column="25" selection-end-line="27" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/LOG.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="26">
+          <caret line="1" column="14" selection-start-line="1" selection-start-column="7" selection-end-line="1" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/Conf.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="104">
+          <caret line="5" column="12" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Python37/Lib/site-packages/_pytest/fixtures.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="267">
+          <caret line="1120" column="24" lean-forward="true" selection-start-line="1120" selection-start-column="24" selection-end-line="1120" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Outputs/reports/report.html">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Outputs/screenshots/2019-11-22 16-08-36_在文本框中输入机构代码.png" />
+    <entry file="file://$PROJECT_DIR$/Outputs/screenshots/2019-11-22 16-06-31_在文本框中输入机构代码.png" />
+    <entry file="file://$PROJECT_DIR$/Outputs/screenshots/2019-11-22 16-17-34_在文本框中输入机构代码.png" />
+    <entry file="file://$PROJECT_DIR$/Outputs/logs/web_log.log">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PageLocators/bank_page_locators.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="37" column="24" lean-forward="true" selection-start-line="37" selection-start-column="24" selection-end-line="37" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestDatas/bank_page_datas.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="260">
+          <caret line="10" column="29" lean-forward="true" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PageObjects/bank_page.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="45" column="26" selection-start-line="45" selection-start-column="26" selection-end-line="45" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/EXCEL.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="26">
+          <caret line="31" column="39" selection-start-line="31" selection-start-column="39" selection-end-line="31" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestDatas/tax_manage_datas.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="78">
+          <caret line="3" column="9" selection-start-line="3" selection-end-line="3" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestCases/test_04_gui_manage.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="616">
+          <caret line="62" column="36" lean-forward="true" selection-start-line="62" selection-start-column="36" selection-end-line="62" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestDatas/gui_manage_datas.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="104">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pytest.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="104">
+          <caret line="4" column="8" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Outputs/screenshots/2019-11-25 11-15-13_点击银行管理菜单.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestCases/test_06_bank_page.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="88" column="33" selection-start-line="88" selection-start-column="33" selection-end-line="88" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PageObjects/ad_page.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2">
+          <caret line="40" column="11" selection-start-line="40" selection-start-column="11" selection-end-line="40" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestDatas/ad_page_datas.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestCases/test_05_ad_page.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="208">
+          <caret line="47" column="34" selection-start-line="47" selection-start-column="34" selection-end-line="47" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestDatas/Common_Data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="312">
+          <caret line="12" column="16" lean-forward="true" selection-start-line="12" selection-start-column="16" selection-end-line="12" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PageLocators/home_page_locators.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="52">
+          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PageObjects/login_page.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="123">
+          <caret line="8" column="7" lean-forward="true" selection-start-line="8" selection-start-column="7" selection-end-line="8" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PageObjects/gui_manage_page.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="130">
+          <caret line="8" column="7" lean-forward="true" selection-start-line="8" selection-start-column="7" selection-end-line="8" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestCases/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="624">
+          <caret line="24" column="15" lean-forward="true" selection-start-line="24" selection-start-column="15" selection-end-line="24" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestCases/conftest.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="32" column="25" selection-start-line="31" selection-start-column="4" selection-end-line="32" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="641">
+          <caret line="35" column="18" selection-start-line="35" selection-start-column="18" selection-end-line="35" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestCases/test_01_login.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="650">
+          <caret line="29" column="66" selection-start-line="29" selection-start-column="66" selection-end-line="29" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/1.py" />
+    <entry file="file://$PROJECT_DIR$/Api/Api_objects1.py" />
+    <entry file="file://$PROJECT_DIR$/PageObjects/non_tax_manage_page.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="936">
+          <caret line="38" column="76" selection-start-line="38" selection-start-column="67" selection-end-line="38" selection-end-column="76" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PageLocators/non_tax_locators.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1352">
+          <caret line="52" column="59" selection-start-line="52" selection-start-column="59" selection-end-line="52" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PageObjects/home_page.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="832">
+          <caret line="34" column="43" selection-start-line="34" selection-start-column="43" selection-end-line="34" selection-end-column="43" />
+          <folding>
+            <element signature="e#24#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Common/BasePage.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="806">
+          <caret line="40" column="44" lean-forward="true" selection-start-line="40" selection-start-column="44" selection-end-line="40" selection-end-column="44" />
+          <folding>
+            <element signature="e#24#33#0" expanded="true" />
+            <marker date="1574061452515" expanded="true" signature="426:431" ph="..." />
+            <marker date="1574061452515" expanded="true" signature="543:548" ph="..." />
+            <marker date="1574061452515" expanded="true" signature="829:1248" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Api/test.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestDatas/login_datas.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="52">
+          <caret line="2" column="15" lean-forward="true" selection-start-line="2" selection-start-column="15" selection-end-line="2" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Api/api_objects.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="312">
+          <caret line="13" column="50" lean-forward="true" selection-start-line="13" selection-start-column="50" selection-end-line="13" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="7" column="50" selection-start-line="7" selection-start-column="50" selection-end-line="7" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestCases/test_02_home_page.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="7" column="15" lean-forward="true" selection-start-line="7" selection-start-column="15" selection-end-line="7" selection-end-column="15" />
+          <folding>
+            <element signature="e#24#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TestCases/test_03_nontax_page.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="416">
+          <caret line="17" column="12" lean-forward="true" selection-start-line="17" selection-start-column="12" selection-end-line="17" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PageLocators/login_locators.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="312">
+          <caret line="12" column="58" selection-start-line="12" selection-start-column="47" selection-end-line="12" selection-end-column="58" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PageLocators/gui_manage_locators.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="520">
+          <caret line="29" column="61" selection-start-line="29" selection-start-column="52" selection-end-line="29" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

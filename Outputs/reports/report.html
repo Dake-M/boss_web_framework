@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Test Report</title>
+    <link href="assets/style.css" rel="stylesheet" type="text/css"/></head>
+  <body onLoad="init()">
+    <script>/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+function toArray(iter) {
+    if (iter === null) {
+        return null;
+    }
+    return Array.prototype.slice.call(iter);
+}
+
+function find(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return elem.querySelector(selector);
+}
+
+function find_all(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return toArray(elem.querySelectorAll(selector));
+}
+
+function sort_column(elem) {
+    toggle_sort_states(elem);
+    var colIndex = toArray(elem.parentNode.childNodes).indexOf(elem);
+    var key;
+    if (elem.classList.contains('numeric')) {
+        key = key_num;
+    } else if (elem.classList.contains('result')) {
+        key = key_result;
+    } else {
+        key = key_alpha;
+    }
+    sort_table(elem, key(colIndex));
+}
+
+function show_all_extras() {
+    find_all('.col-result').forEach(show_extras);
+}
+
+function hide_all_extras() {
+    find_all('.col-result').forEach(hide_extras);
+}
+
+function show_extras(colresult_elem) {
+    var extras = colresult_elem.parentNode.nextElementSibling;
+    var expandcollapse = colresult_elem.firstElementChild;
+    extras.classList.remove("collapsed");
+    expandcollapse.classList.remove("expander");
+    expandcollapse.classList.add("collapser");
+}
+
+function hide_extras(colresult_elem) {
+    var extras = colresult_elem.parentNode.nextElementSibling;
+    var expandcollapse = colresult_elem.firstElementChild;
+    extras.classList.add("collapsed");
+    expandcollapse.classList.remove("collapser");
+    expandcollapse.classList.add("expander");
+}
+
+function show_filters() {
+    var filter_items = document.getElementsByClassName('filter');
+    for (var i = 0; i < filter_items.length; i++)
+        filter_items[i].hidden = false;
+}
+
+function add_collapse() {
+    // Add links for show/hide all
+    var resulttable = find('table#results-table');
+    var showhideall = document.createElement("p");
+    showhideall.innerHTML = '<a href="javascript:show_all_extras()">Show all details</a> / ' +
+                            '<a href="javascript:hide_all_extras()">Hide all details</a>';
+    resulttable.parentElement.insertBefore(showhideall, resulttable);
+
+    // Add show/hide link to each result
+    find_all('.col-result').forEach(function(elem) {
+        var collapsed = get_query_parameter('collapsed') || 'Passed';
+        var extras = elem.parentNode.nextElementSibling;
+        var expandcollapse = document.createElement("span");
+        if (collapsed.includes(elem.innerHTML)) {
+            extras.classList.add("collapsed");
+            expandcollapse.classList.add("expander");
+        } else {
+            expandcollapse.classList.add("collapser");
+        }
+        elem.appendChild(expandcollapse);
+
+        elem.addEventListener("click", function(event) {
+            if (event.currentTarget.parentNode.nextElementSibling.classList.contains("collapsed")) {
+                show_extras(event.currentTarget);
+            } else {
+                hide_extras(event.currentTarget);
+            }
+        });
+    })
+}
+
+function get_query_parameter(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function init () {
+    reset_sort_headers();
+
+    add_collapse();
+
+    show_filters();
+
+    toggle_sort_states(find('.initial-sort'));
+
+    find_all('.sortable').forEach(function(elem) {
+        elem.addEventListener("click",
+                              function(event) {
+                                  sort_column(elem);
+                              }, false)
+    });
+
+};
+
+function sort_table(clicked, key_func) {
+    var rows = find_all('.results-table-row');
+    var reversed = !clicked.classList.contains('asc');
+    var sorted_rows = sort(rows, key_func, reversed);
+    /* Whole table is removed here because browsers acts much slower
+     * when appending existing elements.
+     */
+    var thead = document.getElementById("results-table-head");
+    document.getElementById('results-table').remove();
+    var parent = document.createElement("table");
+    parent.id = "results-table";
+    parent.appendChild(thead);
+    sorted_rows.forEach(function(elem) {
+        parent.appendChild(elem);
+    });
+    document.getElementsByTagName("BODY")[0].appendChild(parent);
+}
+
+function sort(items, key_func, reversed) {
+    var sort_array = items.map(function(item, i) {
+        return [key_func(item), i];
+    });
+
+    sort_array.sort(function(a, b) {
+        var key_a = a[0];
+        var key_b = b[0];
+
+        if (key_a == key_b) return 0;
+
+        if (reversed) {
+            return (key_a < key_b ? 1 : -1);
+        } else {
+            return (key_a > key_b ? 1 : -1);
+        }
+    });
+
+    return sort_array.map(function(item) {
+        var index = item[1];
+        return items[index];
+    });
+}
+
+function key_alpha(col_index) {
+    return function(elem) {
+        return elem.childNodes[1].childNodes[col_index].firstChild.data.toLowerCase();
+    };
+}
+
+function key_num(col_index) {
+    return function(elem) {
+        return parseFloat(elem.childNodes[1].childNodes[col_index].firstChild.data);
+    };
+}
+
+function key_result(col_index) {
+    return function(elem) {
+        var strings = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed',
+                       'Skipped', 'Passed'];
+        return strings.indexOf(elem.childNodes[1].childNodes[col_index].firstChild.data);
+    };
+}
+
+function reset_sort_headers() {
+    find_all('.sort-icon').forEach(function(elem) {
+        elem.parentNode.removeChild(elem);
+    });
+    find_all('.sortable').forEach(function(elem) {
+        var icon = document.createElement("div");
+        icon.className = "sort-icon";
+        icon.textContent = "vvv";
+        elem.insertBefore(icon, elem.firstChild);
+        elem.classList.remove("desc", "active");
+        elem.classList.add("asc", "inactive");
+    });
+}
+
+function toggle_sort_states(elem) {
+    //if active, toggle between asc and desc
+    if (elem.classList.contains('active')) {
+        elem.classList.toggle('asc');
+        elem.classList.toggle('desc');
+    }
+
+    //if inactive, reset all other functions and add ascending active
+    if (elem.classList.contains('inactive')) {
+        reset_sort_headers();
+        elem.classList.remove('inactive');
+        elem.classList.add('active');
+    }
+}
+
+function is_all_rows_hidden(value) {
+  return value.hidden == false;
+}
+
+function filter_table(elem) {
+    var outcome_att = "data-test-result";
+    var outcome = elem.getAttribute(outcome_att);
+    class_outcome = outcome + " results-table-row";
+    var outcome_rows = document.getElementsByClassName(class_outcome);
+
+    for(var i = 0; i < outcome_rows.length; i++){
+        outcome_rows[i].hidden = !elem.checked;
+    }
+
+    var rows = find_all('.results-table-row').filter(is_all_rows_hidden);
+    var all_rows_hidden = rows.length == 0 ? true : false;
+    var not_found_message = document.getElementById("not-found-message");
+    not_found_message.hidden = !all_rows_hidden;
+}
+</script>
+    <h1>report.html</h1>
+    <p>Report generated on 25-Nov-2019 at 11:35:14 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v2.0.0</p>
+    <h2>Environment</h2>
+    <table id="environment">
+      <tr>
+        <td>JAVA_HOME</td>
+        <td>C:\Program Files\Java\jdk1.8.0_45</td></tr>
+      <tr>
+        <td>Packages</td>
+        <td>{&apos;pytest&apos;: &apos;5.2.1&apos;, &apos;py&apos;: &apos;1.8.0&apos;, &apos;pluggy&apos;: &apos;0.13.0&apos;}</td></tr>
+      <tr>
+        <td>Platform</td>
+        <td>Windows-7-6.1.7601-SP1</td></tr>
+      <tr>
+        <td>Plugins</td>
+        <td>{&apos;allure-pytest&apos;: &apos;2.8.6&apos;, &apos;html&apos;: &apos;2.0.0&apos;, &apos;metadata&apos;: &apos;1.8.0&apos;, &apos;rerunfailures&apos;: &apos;7.0&apos;}</td></tr>
+      <tr>
+        <td>Python</td>
+        <td>3.7.0</td></tr></table>
+    <h2>Summary</h2>
+    <p>36 tests ran in 299.96 seconds. </p>
+    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="passed">34 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="failed">2 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>, <input checked="true" class="filter" data-test-result="rerun" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="rerun">0 rerun</span>
+    <h2>Results</h2>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable result initial-sort" col="result">Result</th>
+          <th class="sortable" col="name">Test</th>
+          <th class="sortable numeric" col="duration">Duration</th>
+          <th>Links</th></tr>
+        <tr hidden="true" id="not-found-message">
+          <th colspan="4">No results found. Try to check the filters</th></tr></thead>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">TestCases/test_05_ad_page.py::TestAd::test03_add_ad</td>
+          <td class="col-duration">37.17</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_05_ad_page.TestAd object at 0x0000000004D11C18&gt;<br/>init_ad_manage = &lt;PageObjects.ad_page.AdPage object at 0x0000000004D06A90&gt;<br/><br/>    @pytest.mark.usefixtures(&quot;init_ad_manage&quot;)<br/>    def test03_add_ad(self, init_ad_manage):<br/>        &quot;&quot;&quot;<br/>        新增广告<br/>        :return:<br/>        &quot;&quot;&quot;<br/>        init_ad_manage.add_ad(ad.ad_name, ad.start_time, ad.end_time, ad.path, ad.url, ad.group_name)<br/>        try:<br/>            assert init_ad_manage.get_ad_name() == ad.ad_name<br/>        except Exception as e:<br/>&gt;           raise e<br/><br/>TestCases\test_05_ad_page.py:45: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _<br/>TestCases\test_05_ad_page.py:43: in test03_add_ad<br/>    assert init_ad_manage.get_ad_name() == ad.ad_name<br/>PageObjects\ad_page.py:37: in get_ad_name<br/>    text = self.get_element_text(al.ad_name, &quot;获取广告列表第一行广告名称&quot;)<br/>Common\BasePage.py:249: in get_element_text<br/>    self.wait_page_contains_element(loc, img_doc, timeout, frequency)<br/>Common\BasePage.py:160: in wait_page_contains_element<br/>    raise e<br/>Common\BasePage.py:153: in wait_page_contains_element<br/>    WebDriverWait(self.driver, timeout, frequency).until(EC.presence_of_element_located(loc))<br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _<br/><br/>self = &lt;selenium.webdriver.support.wait.WebDriverWait (session=&quot;a443614483f9498bd6170a66945dcd66&quot;)&gt;<br/>method = &lt;selenium.webdriver.support.expected_conditions.presence_of_element_located object at 0x0000000004CE75C0&gt;<br/>message = &#x27;&#x27;<br/><br/>    def until(self, method, message=&#x27;&#x27;):<br/>        &quot;&quot;&quot;Calls the method provided with the driver as an argument until the \<br/>        return value is not False.&quot;&quot;&quot;<br/>        screen = None<br/>        stacktrace = None<br/>    <br/>        end_time = time.time() + self._timeout<br/>        while True:<br/>            try:<br/>                value = method(self._driver)<br/>                if value:<br/>                    return value<br/>            except self._ignored_exceptions as exc:<br/>                screen = getattr(exc, &#x27;screen&#x27;, None)<br/>                stacktrace = getattr(exc, &#x27;stacktrace&#x27;, None)<br/>            time.sleep(self._poll)<br/>            if time.time() &gt; end_time:<br/>                break<br/>&gt;       raise TimeoutException(message, screen, stacktrace)<br/><span class="error">E       selenium.common.exceptions.TimeoutException: Message:</span><br/><br/>D:\Python37\lib\site-packages\selenium\webdriver\support\wait.py:80: TimeoutException<br/> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击广告管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;广告管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击广告管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;广告管理&#x27;]&quot;)。<br/> ------------------------------Captured stderr call------------------------------ <br/>2019-11-25 11:34:03,040 - [ERROR] - 元素不存在！ - wait_page_contains_element - 158
+Traceback (most recent call last):
+  File &quot;D:\Web_framework\Common\BasePage.py&quot;, line 153, in wait_page_contains_element
+    WebDriverWait(self.driver, timeout, frequency).until(EC.presence_of_element_located(loc))
+  File &quot;D:\Python37\lib\site-packages\selenium\webdriver\support\wait.py&quot;, line 80, in until
+    raise TimeoutException(message, screen, stacktrace)
+selenium.common.exceptions.TimeoutException: Message: 
+
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击创建广告按钮查找元素(&#x27;xpath&#x27;, &quot;//a/span[text()=&#x27;+创建广告&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击创建广告按钮点击元素(&#x27;xpath&#x27;, &quot;//a/span[text()=&#x27;+创建广告&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在输入广告名称查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;title&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入广告名称对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;title&#x27;]/following-sibling::div//input&quot;)输入信息daketest。
+INFO     web_log:BasePage.py:172 在点击上传按钮查找元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;el-upload el-upload--text&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击上传按钮点击元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;el-upload el-upload--text&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在输入跳转链接url查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;adUrl&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入跳转链接url对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;adUrl&#x27;]/following-sibling::div//input&quot;)输入信息https://www.hao123.com/。
+INFO     web_log:BasePage.py:172 在点击选择投放客户按钮查找元素(&#x27;xpath&#x27;, &quot;//span[@class=&#x27;iscustomer&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击选择投放客户按钮点击元素(&#x27;xpath&#x27;, &quot;//span[@class=&#x27;iscustomer&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在在教育局/集团文本框输入教育局名称查找元素(&#x27;xpath&#x27;, &quot;//label[text()=&#x27;教育局/集团:&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在在教育局/集团文本框输入教育局名称对元素(&#x27;xpath&#x27;, &quot;//label[text()=&#x27;教育局/集团:&#x27;]/following-sibling::div//input&quot;)输入信息兴和网络测试。
+INFO     web_log:BasePage.py:172 在客户列表点击搜索按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@type=&#x27;button&#x27;][contains(.,&#x27;搜 索&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:214 在客户列表点击搜索按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@type=&#x27;button&#x27;][contains(.,&#x27;搜 索&#x27;)]&quot;)。
+INFO     web_log:BasePage.py:172 在点击勾选框选择客户查找元素(&#x27;xpath&#x27;, &quot;//tbody//tr[1]//span[@class=&#x27;el-checkbox__inner&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击勾选框选择客户点击元素(&#x27;xpath&#x27;, &quot;//tbody//tr[1]//span[@class=&#x27;el-checkbox__inner&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在选择客户点击确定按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@type=&#x27;button&#x27;][contains(.,&#x27;确 定&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:214 在选择客户点击确定按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@type=&#x27;button&#x27;][contains(.,&#x27;确 定&#x27;)]&quot;)。
+INFO     web_log:BasePage.py:172 在添加广告点击确定按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class=&#x27;el-button el-button--primary el-button--small&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在添加广告点击确定按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class=&#x27;el-button el-button--primary el-button--small&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取广告列表第一行广告名称页面等待元素(&#x27;xpath&#x27;, &#x27;//tr[1]//td[1]//div[1]&#x27;)存在。
+INFO     web_log:BasePage.py:300 截图文件保存在：D:\Web_framework\Outputs\screenshots，文件名为2019-11-25 11-34-02_获取广告列表第一行广告名称.png
+ERROR    web_log:BasePage.py:158 元素不存在！
+Traceback (most recent call last):
+  File &quot;D:\Web_framework\Common\BasePage.py&quot;, line 153, in wait_page_contains_element
+    WebDriverWait(self.driver, timeout, frequency).until(EC.presence_of_element_located(loc))
+  File &quot;D:\Python37\lib\site-packages\selenium\webdriver\support\wait.py&quot;, line 80, in until
+    raise TimeoutException(message, screen, stacktrace)
+selenium.common.exceptions.TimeoutException: Message:<br/></div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">TestCases/test_05_ad_page.py::TestAd::test04_del_ad</td>
+          <td class="col-duration">2.71</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">self = &lt;test_05_ad_page.TestAd object at 0x0000000004D06128&gt;<br/>init_del_ad = &lt;PageObjects.ad_page.AdPage object at 0x0000000004CB32B0&gt;<br/><br/>    @pytest.mark.usefixtures(&quot;init_del_ad&quot;)<br/>    def test04_del_ad(self, init_del_ad):<br/>        &quot;&quot;&quot;<br/>        删除广告<br/>        :return:<br/>        &quot;&quot;&quot;<br/>        init_del_ad.del_ad()<br/>        try:<br/>            assert init_del_ad.get_ad_name() != ad.api_ad_name<br/>        except Exception as e:<br/>&gt;           raise e<br/><br/>TestCases\test_05_ad_page.py:57: <br/>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _<br/><br/>self = &lt;test_05_ad_page.TestAd object at 0x0000000004D06128&gt;<br/>init_del_ad = &lt;PageObjects.ad_page.AdPage object at 0x0000000004CB32B0&gt;<br/><br/>    @pytest.mark.usefixtures(&quot;init_del_ad&quot;)<br/>    def test04_del_ad(self, init_del_ad):<br/>        &quot;&quot;&quot;<br/>        删除广告<br/>        :return:<br/>        &quot;&quot;&quot;<br/>        init_del_ad.del_ad()<br/>        try:<br/>&gt;           assert init_del_ad.get_ad_name() != ad.api_ad_name<br/><span class="error">E           AssertionError: assert &#x27;apidake&#x27; != &#x27;apidake&#x27;</span><br/><span class="error">E            +  where &#x27;apidake&#x27; = &lt;bound method AdPage.get_ad_name of &lt;PageObjects.ad_page.AdPage object at 0x0000000004CB32B0&gt;&gt;()</span><br/><span class="error">E            +    where &lt;bound method AdPage.get_ad_name of &lt;PageObjects.ad_page.AdPage object at 0x0000000004CB32B0&gt;&gt; = &lt;PageObjects.ad_page.AdPage object at 0x0000000004CB32B0&gt;.get_ad_name</span><br/><span class="error">E            +  and   &#x27;apidake&#x27; = ad.api_ad_name</span><br/><br/>TestCases\test_05_ad_page.py:55: AssertionError<br/> -----------------------------Captured stdout setup------------------------------ <br/>{&#x27;errcode&#x27;: &#x27;0&#x27;, &#x27;errmsg&#x27;: &#x27;ok&#x27;}
+<br/> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击广告管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;广告管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击广告管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;广告管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击删除按钮查找元素(&#x27;xpath&#x27;, &quot;//tr[1]//td[8]//button//span[text()=&#x27;删除&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击删除按钮点击元素(&#x27;xpath&#x27;, &quot;//tr[1]//td[8]//button//span[text()=&#x27;删除&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击删除确定按钮查找元素(&#x27;xpath&#x27;, &quot;//span[contains(.,&#x27;确定&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击删除确定按钮点击元素(&#x27;xpath&#x27;, &quot;//span[contains(.,&#x27;确定&#x27;)]&quot;)。
+INFO     web_log:BasePage.py:150 在获取广告列表第一行广告名称页面等待元素(&#x27;xpath&#x27;, &#x27;//tr[1]//td[1]//div[1]&#x27;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.039999961853027344
+INFO     web_log:BasePage.py:172 在获取广告列表第一行广告名称查找元素(&#x27;xpath&#x27;, &#x27;//tr[1]//td[1]//div[1]&#x27;)可见。
+INFO     web_log:BasePage.py:251 在获取广告列表第一行广告名称页面获取元素(&#x27;xpath&#x27;, &#x27;//tr[1]//td[1]//div[1]&#x27;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:apidake<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_01_login.py::TestLogin::test01_boss_login_success</td>
+          <td class="col-duration">1.16</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_01_login.py::TestLogin::test02_boss_login_unnomal[data0]</td>
+          <td class="col-duration">1.07</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816552。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取错误提示信息页面等待元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.011999845504760742
+INFO     web_log:BasePage.py:172 在获取错误提示信息查找元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取错误提示信息页面获取元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:账号或密码错误<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_01_login.py::TestLogin::test02_boss_login_unnomal[data1]</td>
+          <td class="col-duration">1.17</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息147258。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取错误提示信息页面等待元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.03000020980834961
+INFO     web_log:BasePage.py:172 在获取错误提示信息查找元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取错误提示信息页面获取元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:账号或密码错误1<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_01_login.py::TestLogin::test02_boss_login_unnomal[data2]</td>
+          <td class="col-duration">1.19</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456 。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取错误提示信息页面等待元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.04200005531311035
+INFO     web_log:BasePage.py:172 在获取错误提示信息查找元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取错误提示信息页面获取元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:账号或密码错误1<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_01_login.py::TestLogin::test02_boss_login_unnomal[data3]</td>
+          <td class="col-duration">1.11</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123 456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取错误提示信息页面等待元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.01900005340576172
+INFO     web_log:BasePage.py:172 在获取错误提示信息查找元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取错误提示信息页面获取元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:账号或密码错误1<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_01_login.py::TestLogin::test02_boss_login_unnomal[data4]</td>
+          <td class="col-duration">1.17</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息 123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取错误提示信息页面等待元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.023999929428100586
+INFO     web_log:BasePage.py:172 在获取错误提示信息查找元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取错误提示信息页面获取元素(&#x27;xpath&#x27;, &quot;//p[@class = &#x27;el-message__content&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:账号或密码错误1<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_01_login.py::TestLogin::test03_boss_login_unnomal[data0]</td>
+          <td class="col-duration">1.12</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取错误提示信息页面等待元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.03699994087219238
+INFO     web_log:BasePage.py:172 在获取错误提示信息查找元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取错误提示信息页面获取元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:请输入用户名<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_01_login.py::TestLogin::test03_boss_login_unnomal[data1]</td>
+          <td class="col-duration">1.13</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816552。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取错误提示信息页面等待元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.03699994087219238
+INFO     web_log:BasePage.py:172 在获取错误提示信息查找元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取错误提示信息页面获取元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:请输入密码<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_01_login.py::TestLogin::test03_boss_login_unnomal[data2]</td>
+          <td class="col-duration">1.18</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551 。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取错误提示信息页面等待元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.025000333786010742
+INFO     web_log:BasePage.py:172 在获取错误提示信息查找元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取错误提示信息页面获取元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:请输入正确的账号<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_01_login.py::TestLogin::test03_boss_login_unnomal[data3]</td>
+          <td class="col-duration">1.16</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息1326681 6551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取错误提示信息页面等待元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.02499985694885254
+INFO     web_log:BasePage.py:172 在获取错误提示信息查找元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取错误提示信息页面获取元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:请输入正确的账号<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_01_login.py::TestLogin::test03_boss_login_unnomal[data4]</td>
+          <td class="col-duration">1.19</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息 13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取错误提示信息页面等待元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.042999982833862305
+INFO     web_log:BasePage.py:172 在获取错误提示信息查找元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取错误提示信息页面获取元素(&#x27;xpath&#x27;, &quot;//div[@class = &#x27;el-form-item__error&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:请输入正确的账号<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_02_home_page.py::TestHome::test01_pay_data</td>
+          <td class="col-duration">0.60</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_02_home_page.py::TestHome::test02_merchant_data</td>
+          <td class="col-duration">0.67</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击商户数据查找元素(&#x27;xpath&#x27;, &quot;//div[@id = &#x27;tab-merchant&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击商户数据点击元素(&#x27;xpath&#x27;, &quot;//div[@id = &#x27;tab-merchant&#x27;]&quot;)。<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_02_home_page.py::TestHome::test03_quit_login</td>
+          <td class="col-duration">4.13</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在移动鼠标到右上角帐号处查找元素(&#x27;xpath&#x27;, &quot;//span[contains(@class,&#x27;user-name&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:172 在点击退出登录按钮查找元素(&#x27;xpath&#x27;, &quot;//li[@tabindex=&#x27;-1&#x27;][contains(.,&#x27;退出&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击退出登录按钮点击元素(&#x27;xpath&#x27;, &quot;//li[@tabindex=&#x27;-1&#x27;][contains(.,&#x27;退出&#x27;)]&quot;)。<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_03_nontax_page.py::TestNonTax::test01_title_name</td>
+          <td class="col-duration">0.56</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击非税局管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;非税局管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击非税局管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;非税局管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:150 在获取左上角信息标题页面等待元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;info-title&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.5260000228881836
+INFO     web_log:BasePage.py:172 在获取左上角信息标题查找元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;info-title&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取左上角信息标题页面获取元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;info-title&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:非税局管理<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_03_nontax_page.py::TestNonTax::test02_add_tax_manage</td>
+          <td class="col-duration">9.72</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击非税局管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;非税局管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击非税局管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;非税局管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击新增非税局按钮查找元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;新增非税局&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击新增非税局按钮点击元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;新增非税局&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击平台类型下拉框查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请选择平台类型&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击平台类型下拉框点击元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请选择平台类型&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击选择湖南非税局查找元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;湖南非税&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击选择湖南非税局点击元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;湖南非税&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击平台名下拉框查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请选择平台名&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击平台名下拉框点击元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请选择平台名&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击选择农行重庆分行查找元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;农行重庆分行&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击选择农行重庆分行点击元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;农行重庆分行&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在输入区域名查找元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[3]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入区域名对元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[3]&quot;)输入信息tax_manage_name_test。
+INFO     web_log:BasePage.py:172 在输入区域编号查找元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[4]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入区域编号对元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[4]&quot;)输入信息00001。
+INFO     web_log:BasePage.py:172 在输入平台公钥查找元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[5]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入平台公钥对元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[5]&quot;)输入信息8e30d40de736273f。
+INFO     web_log:BasePage.py:172 在输入接口地址查找元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[6]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入接口地址对元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[6]&quot;)输入信息http://10.100.100.78:8090/fslyxf/jkApi/api/nontaxChannelServer。
+INFO     web_log:BasePage.py:172 在输入平台查询token查找元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[7]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入平台查询token对元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[7]&quot;)输入信息0c61cf65ab513cb8。
+INFO     web_log:BasePage.py:172 在输入机构名称查找元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[8]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入机构名称对元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[8]&quot;)输入信息Dake非税局。
+INFO     web_log:BasePage.py:172 在点击所属银行下拉框查找元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;el-input el-input--suffix&#x27;]//input[@placeholder=&#x27;全部&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击所属银行下拉框点击元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;el-input el-input--suffix&#x27;]//input[@placeholder=&#x27;全部&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击选择中国农业银行查找元素(&#x27;xpath&#x27;, &quot;//ul//li//span[text()=&#x27;中国农业银行&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击选择中国农业银行点击元素(&#x27;xpath&#x27;, &quot;//ul//li//span[text()=&#x27;中国农业银行&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在输入平台私钥查找元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[14]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入平台私钥对元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[14]&quot;)输入信息11212。
+INFO     web_log:BasePage.py:172 在输入平台token查找元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[15]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入平台token对元素(&#x27;xpath&#x27;, &quot;(//input[@type=&#x27;text&#x27;])[15]&quot;)输入信息222。
+INFO     web_log:BasePage.py:172 在点击提交按钮查找元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;提交&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击提交按钮点击元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;提交&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取列表第一个非税局名称页面等待元素(&#x27;xpath&#x27;, &quot;(//div[@class=&#x27;cell&#x27;])[10]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.062000274658203125
+INFO     web_log:BasePage.py:172 在获取列表第一个非税局名称查找元素(&#x27;xpath&#x27;, &quot;(//div[@class=&#x27;cell&#x27;])[10]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取列表第一个非税局名称页面获取元素(&#x27;xpath&#x27;, &quot;(//div[@class=&#x27;cell&#x27;])[10]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:Dake非税局<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_03_nontax_page.py::TestNonTax::test03_del_tax_manage</td>
+          <td class="col-duration">1.18</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击非税局管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;非税局管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击非税局管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;非税局管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击删除按钮查找元素(&#x27;xpath&#x27;, &quot;(//span[text()=&#x27;删除&#x27;])[1]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击删除按钮点击元素(&#x27;xpath&#x27;, &quot;(//span[text()=&#x27;删除&#x27;])[1]&quot;)。
+INFO     web_log:BasePage.py:172 在点击确定删除按钮查找元素(&#x27;xpath&#x27;, &quot;//span[contains(.,&#x27;确定&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击确定删除按钮点击元素(&#x27;xpath&#x27;, &quot;//span[contains(.,&#x27;确定&#x27;)]&quot;)。
+INFO     web_log:BasePage.py:150 在获取列表第一个非税局名称页面等待元素(&#x27;xpath&#x27;, &quot;(//div[@class=&#x27;cell&#x27;])[10]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.06799983978271484
+INFO     web_log:BasePage.py:172 在获取列表第一个非税局名称查找元素(&#x27;xpath&#x27;, &quot;(//div[@class=&#x27;cell&#x27;])[10]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取列表第一个非税局名称页面获取元素(&#x27;xpath&#x27;, &quot;(//div[@class=&#x27;cell&#x27;])[10]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:Dake非税局<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_03_nontax_page.py::TestNonTax::test04_course_management_add_code</td>
+          <td class="col-duration">4.89</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击非税局管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;非税局管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击非税局管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;非税局管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击操作列更多按钮查找元素(&#x27;xpath&#x27;, &quot;(//i[@class=&#x27;el-icon-s-operation&#x27;])[1]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击操作列更多按钮点击元素(&#x27;xpath&#x27;, &quot;(//i[@class=&#x27;el-icon-s-operation&#x27;])[1]&quot;)。
+INFO     web_log:BasePage.py:172 在点击缴费项目管理按钮查找元素(&#x27;xpath&#x27;, &#x27;/html[1]/body[1]/div[2]//div[1]/button[1]&#x27;)可见。
+INFO     web_log:BasePage.py:214 在点击缴费项目管理按钮点击元素(&#x27;xpath&#x27;, &#x27;/html[1]/body[1]/div[2]//div[1]/button[1]&#x27;)。
+INFO     web_log:BasePage.py:172 在点击新增非税局项目code按钮查找元素(&#x27;xpath&#x27;, &quot;//span[contains(text(),&#x27;code&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击新增非税局项目code按钮点击元素(&#x27;xpath&#x27;, &quot;//span[contains(text(),&#x27;code&#x27;)]&quot;)。
+INFO     web_log:BasePage.py:172 在输入项目名称查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;name&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入项目名称对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;name&#x27;]/following-sibling::div//input&quot;)输入信息daketest01。
+INFO     web_log:BasePage.py:172 在输入项目编码查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;code&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入项目编码对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;code&#x27;]/following-sibling::div//input&quot;)输入信息dakecode。
+INFO     web_log:BasePage.py:172 在输入项目内部编码查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;innerCode&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入项目内部编码对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;innerCode&#x27;]/following-sibling::div//input&quot;)输入信息dakeinnercode。
+INFO     web_log:BasePage.py:172 在输入缴费上限金额查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;maxLimitPrice&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入缴费上限金额对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;maxLimitPrice&#x27;]/following-sibling::div//input&quot;)输入信息99999。
+INFO     web_log:BasePage.py:172 在输入缴费最低金额查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;minLimitPrice&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入缴费最低金额对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;minLimitPrice&#x27;]/following-sibling::div//input&quot;)输入信息0。
+INFO     web_log:BasePage.py:172 在输入计量单位查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;countUint&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入计量单位对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;countUint&#x27;]/following-sibling::div//input&quot;)输入信息rmb。
+INFO     web_log:BasePage.py:172 在点击提交按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class=&#x27;el-button el-button--primary el-button--small&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击提交按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class=&#x27;el-button el-button--primary el-button--small&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取列表第一行项目名称页面等待元素(&#x27;xpath&#x27;, &quot;(//div[@class=&#x27;cell&#x27;])[8]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.026999711990356445
+INFO     web_log:BasePage.py:172 在获取列表第一行项目名称查找元素(&#x27;xpath&#x27;, &quot;(//div[@class=&#x27;cell&#x27;])[8]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取列表第一行项目名称页面获取元素(&#x27;xpath&#x27;, &quot;(//div[@class=&#x27;cell&#x27;])[8]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:daketest01<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_03_nontax_page.py::TestNonTax::test05_course_management_del_code</td>
+          <td class="col-duration">2.02</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击非税局管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;非税局管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击非税局管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;非税局管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击操作列更多按钮查找元素(&#x27;xpath&#x27;, &quot;(//i[@class=&#x27;el-icon-s-operation&#x27;])[1]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击操作列更多按钮点击元素(&#x27;xpath&#x27;, &quot;(//i[@class=&#x27;el-icon-s-operation&#x27;])[1]&quot;)。
+INFO     web_log:BasePage.py:172 在点击缴费项目管理按钮查找元素(&#x27;xpath&#x27;, &#x27;/html[1]/body[1]/div[2]//div[1]/button[1]&#x27;)可见。
+INFO     web_log:BasePage.py:214 在点击缴费项目管理按钮点击元素(&#x27;xpath&#x27;, &#x27;/html[1]/body[1]/div[2]//div[1]/button[1]&#x27;)。
+INFO     web_log:BasePage.py:172 在code点击删除按钮查找元素(&#x27;xpath&#x27;, &quot;//tbody//tr[1]//button//span[text()=&#x27;删除&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在code点击删除按钮点击元素(&#x27;xpath&#x27;, &quot;//tbody//tr[1]//button//span[text()=&#x27;删除&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击删除确定按钮查找元素(&#x27;xpath&#x27;, &quot;//span[contains(text(),&#x27;确定&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击删除确定按钮点击元素(&#x27;xpath&#x27;, &quot;//span[contains(text(),&#x27;确定&#x27;)]&quot;)。
+INFO     web_log:BasePage.py:150 在获取删除成提示页面等待元素(&#x27;xpath&#x27;, &quot;//p[@class=&#x27;el-message__content&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.5379998683929443
+INFO     web_log:BasePage.py:172 在获取删除成提示查找元素(&#x27;xpath&#x27;, &quot;//p[@class=&#x27;el-message__content&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取删除成提示页面获取元素(&#x27;xpath&#x27;, &quot;//p[@class=&#x27;el-message__content&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:删除成功!<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_03_nontax_page.py::TestNonTax::test06_add_tax_unit</td>
+          <td class="col-duration">4.63</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击非税局管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;非税局管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击非税局管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;非税局管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击操作列更多按钮查找元素(&#x27;xpath&#x27;, &quot;(//i[@class=&#x27;el-icon-s-operation&#x27;])[1]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击操作列更多按钮点击元素(&#x27;xpath&#x27;, &quot;(//i[@class=&#x27;el-icon-s-operation&#x27;])[1]&quot;)。
+INFO     web_log:BasePage.py:172 在点击报税单位管理按钮查找元素(&#x27;xpath&#x27;, &#x27;/html[1]/body[1]/div[2]/div[1]/button[2]/span[1]&#x27;)可见。
+INFO     web_log:BasePage.py:214 在点击报税单位管理按钮点击元素(&#x27;xpath&#x27;, &#x27;/html[1]/body[1]/div[2]/div[1]/button[2]/span[1]&#x27;)。
+INFO     web_log:BasePage.py:172 在点击新增报税单位按钮查找元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;新增报税单位&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击新增报税单位按钮点击元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;新增报税单位&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在输入缴费单位名称查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;name&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入缴费单位名称对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;name&#x27;]/following-sibling::div//input&quot;)输入信息daketest01。
+INFO     web_log:BasePage.py:172 在输入缴费单位code查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;code&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入缴费单位code对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;code&#x27;]/following-sibling::div//input&quot;)输入信息daketestcode01。
+INFO     web_log:BasePage.py:172 在输入token查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;instanceToken&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入token对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;instanceToken&#x27;]/following-sibling::div//input&quot;)输入信息daketesttoken01。
+INFO     web_log:BasePage.py:172 在输入查询token查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;instanceQueryToken&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入查询token对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;instanceQueryToken&#x27;]/following-sibling::div//input&quot;)输入信息daketesttoken02。
+INFO     web_log:BasePage.py:172 在输入token配套app查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;instanceTokenApp&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入token配套app对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;instanceTokenApp&#x27;]/following-sibling::div//input&quot;)输入信息daketestapp01。
+INFO     web_log:BasePage.py:172 在输入查询token配套app查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;instanceQueryApp&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入查询token配套app对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;instanceQueryApp&#x27;]/following-sibling::div//input&quot;)输入信息daketestapp02。
+INFO     web_log:BasePage.py:172 在点击提交按钮查找元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;提交&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击提交按钮点击元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;提交&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取缴费名单名称页面等待元素(&#x27;xpath&#x27;, &quot;(//div[contains(@class,&#x27;cell&#x27;)])[8]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.025999784469604492
+INFO     web_log:BasePage.py:172 在获取缴费名单名称查找元素(&#x27;xpath&#x27;, &quot;(//div[contains(@class,&#x27;cell&#x27;)])[8]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取缴费名单名称页面获取元素(&#x27;xpath&#x27;, &quot;(//div[contains(@class,&#x27;cell&#x27;)])[8]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:daketest01<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_03_nontax_page.py::TestNonTax::test07_del_tax_unit</td>
+          <td class="col-duration">2.04</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击非税局管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;非税局管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击非税局管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;非税局管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击操作列更多按钮查找元素(&#x27;xpath&#x27;, &quot;(//i[@class=&#x27;el-icon-s-operation&#x27;])[1]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击操作列更多按钮点击元素(&#x27;xpath&#x27;, &quot;(//i[@class=&#x27;el-icon-s-operation&#x27;])[1]&quot;)。
+INFO     web_log:BasePage.py:172 在点击报税单位管理按钮查找元素(&#x27;xpath&#x27;, &#x27;/html[1]/body[1]/div[2]/div[1]/button[2]/span[1]&#x27;)可见。
+INFO     web_log:BasePage.py:214 在点击报税单位管理按钮点击元素(&#x27;xpath&#x27;, &#x27;/html[1]/body[1]/div[2]/div[1]/button[2]/span[1]&#x27;)。
+INFO     web_log:BasePage.py:172 在非税局报税单位点击删除按钮查找元素(&#x27;xpath&#x27;, &quot;(//span[contains(.,&#x27;删除&#x27;)])[1]&quot;)可见。
+INFO     web_log:BasePage.py:214 在非税局报税单位点击删除按钮点击元素(&#x27;xpath&#x27;, &quot;(//span[contains(.,&#x27;删除&#x27;)])[1]&quot;)。
+INFO     web_log:BasePage.py:172 在点击删除确定按钮查找元素(&#x27;xpath&#x27;, &quot;//span[contains(text(),&#x27;确定&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击删除确定按钮点击元素(&#x27;xpath&#x27;, &quot;//span[contains(text(),&#x27;确定&#x27;)]&quot;)。
+INFO     web_log:BasePage.py:150 在获取非税局报税单位删除成提示页面等待元素(&#x27;xpath&#x27;, &quot;//p[@class=&#x27;el-message__content&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.5209999084472656
+INFO     web_log:BasePage.py:172 在获取非税局报税单位删除成提示查找元素(&#x27;xpath&#x27;, &quot;//p[@class=&#x27;el-message__content&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取非税局报税单位删除成提示页面获取元素(&#x27;xpath&#x27;, &quot;//p[@class=&#x27;el-message__content&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:删除成功!<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_04_gui_manage.py::TestShow::test01_title_name</td>
+          <td class="col-duration">0.59</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击指引管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;指引管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击指引管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;指引管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:150 在左上角标题页面等待元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;info-title&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.5260000228881836
+INFO     web_log:BasePage.py:172 在左上角标题查找元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;info-title&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在左上角标题页面获取元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;info-title&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:指引模块列表<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_04_gui_manage.py::TestShow::test02_add_show_module</td>
+          <td class="col-duration">5.12</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击指引管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;指引管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击指引管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;指引管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击添加模块按钮查找元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;添加模块&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击添加模块按钮点击元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;添加模块&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在新增指引模块输入模块名称查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;name&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在新增指引模块输入模块名称对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;name&#x27;]/following-sibling::div//input&quot;)输入信息dakemodule。
+INFO     web_log:BasePage.py:172 在新增指引模块输入排序查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;index&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在新增指引模块输入排序对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;index&#x27;]/following-sibling::div//input&quot;)输入信息1。
+INFO     web_log:BasePage.py:172 在点击上传按钮查找元素(&#x27;xpath&#x27;, &quot;//i[@class=&#x27;el-icon-plus upload-demo-icon over&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击上传按钮点击元素(&#x27;xpath&#x27;, &quot;//i[@class=&#x27;el-icon-plus upload-demo-icon over&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在新增指引模块点击确定按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class=&#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在新增指引模块点击确定按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class=&#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:133 在第一行模块名称等待元素(&#x27;xpath&#x27;, &#x27;//tbody//tr[1]//div&#x27;)可见。
+INFO     web_log:BasePage.py:150 在获取第一行模块名称页面等待元素(&#x27;xpath&#x27;, &#x27;//tbody//tr[1]//div&#x27;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.0070002079010009766
+INFO     web_log:BasePage.py:172 在获取第一行模块名称查找元素(&#x27;xpath&#x27;, &#x27;//tbody//tr[1]//div&#x27;)可见。
+INFO     web_log:BasePage.py:251 在获取第一行模块名称页面获取元素(&#x27;xpath&#x27;, &#x27;//tbody//tr[1]//div&#x27;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:dakemodule<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_04_gui_manage.py::TestShow::test03_del_gui_module</td>
+          <td class="col-duration">1.78</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击指引管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;指引管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击指引管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;指引管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击删除按钮查找元素(&#x27;xpath&#x27;, &quot;//tbody//tr[1]//span[text()=&#x27;删除&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击删除按钮点击元素(&#x27;xpath&#x27;, &quot;//tbody//tr[1]//span[text()=&#x27;删除&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击删除指引模块确定按钮查找元素(&#x27;xpath&#x27;, &quot;//span[contains(.,&#x27;确定&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击删除指引模块确定按钮点击元素(&#x27;xpath&#x27;, &quot;//span[contains(.,&#x27;确定&#x27;)]&quot;)。
+INFO     web_log:BasePage.py:133 在第一行模块名称等待元素(&#x27;xpath&#x27;, &#x27;//tbody//tr[1]//div&#x27;)可见。
+INFO     web_log:BasePage.py:150 在获取第一行模块名称页面等待元素(&#x27;xpath&#x27;, &#x27;//tbody//tr[1]//div&#x27;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.0070002079010009766
+INFO     web_log:BasePage.py:172 在获取第一行模块名称查找元素(&#x27;xpath&#x27;, &#x27;//tbody//tr[1]//div&#x27;)可见。
+INFO     web_log:BasePage.py:251 在获取第一行模块名称页面获取元素(&#x27;xpath&#x27;, &#x27;//tbody//tr[1]//div&#x27;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:dakemodule<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_04_gui_manage.py::TestShow::test04_add_gui_item</td>
+          <td class="col-duration">5.01</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击指引管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;指引管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击指引管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;指引管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击添加指引按钮查找元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;添加指引&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击添加指引按钮点击元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;添加指引&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在输入指引项名称查找元素(&#x27;xpath&#x27;, &quot;//input[@type=&#x27;text&#x27; and @class = &#x27;el-input__inner&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入指引项名称对元素(&#x27;xpath&#x27;, &quot;//input[@type=&#x27;text&#x27; and @class = &#x27;el-input__inner&#x27;]&quot;)输入信息dakeshowname。
+INFO     web_log:BasePage.py:172 在输入指引排序查找元素(&#x27;xpath&#x27;, &quot;//input[@type=&#x27;number&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入指引排序对元素(&#x27;xpath&#x27;, &quot;//input[@type=&#x27;number&#x27;]&quot;)输入信息1。
+INFO     web_log:BasePage.py:172 在切换iframe查找元素(&#x27;xpath&#x27;, &quot;//iframe[@class= &#x27;ke-edit-iframe&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:172 在输入指引展示文案查找元素(&#x27;xpath&#x27;, &quot;//body[contains(@class,&#x27;ke-content&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入指引展示文案对元素(&#x27;xpath&#x27;, &quot;//body[contains(@class,&#x27;ke-content&#x27;)]&quot;)输入信息这是dake测试展示文案。
+INFO     web_log:BasePage.py:172 在点击提交按钮查找元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;提交&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击提交按钮点击元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;提交&#x27;]&quot;)。
+INFO     web_log:BasePage.py:133 在获取指引项名称等待元素(&#x27;xpath&#x27;, &#x27;//tbody//tr[1]//td[2]//div&#x27;)可见。
+INFO     web_log:BasePage.py:150 在获取指引项名称页面等待元素(&#x27;xpath&#x27;, &#x27;//tbody//tr[1]//td[2]//div&#x27;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.009999752044677734
+INFO     web_log:BasePage.py:172 在获取指引项名称查找元素(&#x27;xpath&#x27;, &#x27;//tbody//tr[1]//td[2]//div&#x27;)可见。
+INFO     web_log:BasePage.py:251 在获取指引项名称页面获取元素(&#x27;xpath&#x27;, &#x27;//tbody//tr[1]//td[2]//div&#x27;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:dakeshowname<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_04_gui_manage.py::TestShow::test05_del_gui_item</td>
+          <td class="col-duration">21.71</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击指引管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;指引管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击指引管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;指引管理&#x27;]&quot;)。<br/> ------------------------------Captured stderr call------------------------------ <br/>2019-11-25 11:33:09,929 - [ERROR] - 元素不存在！ - if_ele_is_exist - 141
+Traceback (most recent call last):
+  File &quot;D:\Web_framework\Common\BasePage.py&quot;, line 135, in if_ele_is_exist
+    WebDriverWait(self.driver, timeout, frequency).until(EC.presence_of_element_located(loc))
+  File &quot;D:\Python37\lib\site-packages\selenium\webdriver\support\wait.py&quot;, line 80, in until
+    raise TimeoutException(message, screen, stacktrace)
+selenium.common.exceptions.TimeoutException: Message: 
+
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击指引项第一行删除按钮查找元素(&#x27;xpath&#x27;, &quot;//tbody//tr[1]//td[4]//span[text()=&#x27;删除&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击指引项第一行删除按钮点击元素(&#x27;xpath&#x27;, &quot;//tbody//tr[1]//td[4]//span[text()=&#x27;删除&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击删除指引项确定按钮查找元素(&#x27;xpath&#x27;, &quot;//button//span[contains(text(),&#x27;确定&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击删除指引项确定按钮点击元素(&#x27;xpath&#x27;, &quot;//button//span[contains(text(),&#x27;确定&#x27;)]&quot;)。
+INFO     web_log:BasePage.py:133 在获取指引项名称等待元素(&#x27;xpath&#x27;, &#x27;//tbody//tr[1]//td[2]//div&#x27;)可见。
+INFO     web_log:BasePage.py:300 截图文件保存在：D:\Web_framework\Outputs\screenshots，文件名为2019-11-25 11-33-09_获取指引项名称.png
+ERROR    web_log:BasePage.py:141 元素不存在！
+Traceback (most recent call last):
+  File &quot;D:\Web_framework\Common\BasePage.py&quot;, line 135, in if_ele_is_exist
+    WebDriverWait(self.driver, timeout, frequency).until(EC.presence_of_element_located(loc))
+  File &quot;D:\Python37\lib\site-packages\selenium\webdriver\support\wait.py&quot;, line 80, in until
+    raise TimeoutException(message, screen, stacktrace)
+selenium.common.exceptions.TimeoutException: Message:<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_05_ad_page.py::TestAd::test01_title_name</td>
+          <td class="col-duration">0.59</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击广告管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;广告管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击广告管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;广告管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:150 在左上角标题页面等待元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;info-title&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.5299999713897705
+INFO     web_log:BasePage.py:172 在左上角标题查找元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;info-title&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在左上角标题页面获取元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;info-title&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:广告管理<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_05_ad_page.py::TestAd::test02_search_ad</td>
+          <td class="col-duration">2.10</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -----------------------------Captured stdout setup------------------------------ <br/>{&#x27;errcode&#x27;: &#x27;0&#x27;, &#x27;errmsg&#x27;: &#x27;ok&#x27;}
+<br/> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击广告管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;广告管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击广告管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;广告管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在在广告名称文本框输入广告名称查找元素(&#x27;xpath&#x27;, &quot;//label//span[text()=&#x27;广告名称：&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在在广告名称文本框输入广告名称对元素(&#x27;xpath&#x27;, &quot;//label//span[text()=&#x27;广告名称：&#x27;]/following-sibling::div//input&quot;)输入信息apidake。
+INFO     web_log:BasePage.py:172 在点击搜索按钮查找元素(&#x27;xpath&#x27;, &quot;//button/span[text()=&#x27;搜索&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击搜索按钮点击元素(&#x27;xpath&#x27;, &quot;//button/span[text()=&#x27;搜索&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取广告列表第一行广告名称页面等待元素(&#x27;xpath&#x27;, &#x27;//tr[1]//td[1]//div[1]&#x27;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.054000139236450195
+INFO     web_log:BasePage.py:172 在获取广告列表第一行广告名称查找元素(&#x27;xpath&#x27;, &#x27;//tr[1]//td[1]//div[1]&#x27;)可见。
+INFO     web_log:BasePage.py:251 在获取广告列表第一行广告名称页面获取元素(&#x27;xpath&#x27;, &#x27;//tr[1]//td[1]//div[1]&#x27;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:apidake
+INFO     web_log:BasePage.py:150 在获取状态信息页面等待元素(&#x27;xpath&#x27;, &#x27;//tr[1]//td[7]//div[1]//div[1]&#x27;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.009999990463256836
+INFO     web_log:BasePage.py:172 在获取状态信息查找元素(&#x27;xpath&#x27;, &#x27;//tr[1]//td[7]//div[1]//div[1]&#x27;)可见。
+INFO     web_log:BasePage.py:276 在获取状态信息页面获取元素(&#x27;xpath&#x27;, &#x27;//tr[1]//td[7]//div[1]//div[1]&#x27;)的属性class。
+INFO     web_log:BasePage.py:287 获取到的元素属性值为:el-switch<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_06_bank_page.py::TestBank::test01_title_name</td>
+          <td class="col-duration">0.57</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击银行管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;银行管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击银行管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;银行管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:150 在左上角标题页面等待元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;info-title&#x27;]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.5260000228881836
+INFO     web_log:BasePage.py:172 在左上角标题查找元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;info-title&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:251 在左上角标题页面获取元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;info-title&#x27;]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:银行管理<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_06_bank_page.py::TestBank::test02_add_bank</td>
+          <td class="col-duration">4.49</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击银行管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;银行管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击银行管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;银行管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在添加添加银行按钮查找元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;+添加银行&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在添加添加银行按钮点击元素(&#x27;xpath&#x27;, &quot;//span[text()=&#x27;+添加银行&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在输入银行名称查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;name&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入银行名称对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;name&#x27;]/following-sibling::div//input&quot;)输入信息dakebankname。
+INFO     web_log:BasePage.py:172 在输入机构代码查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;bankNo&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入机构代码对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;bankNo&#x27;]/following-sibling::div//input&quot;)输入信息dakecode。
+INFO     web_log:BasePage.py:172 在点击添加银行确定按钮查找元素(&#x27;xpath&#x27;, &quot;//span[@class=&#x27;dialog-footer&#x27;]//span[contains(.,&#x27;确 定&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击添加银行确定按钮点击元素(&#x27;xpath&#x27;, &quot;//span[@class=&#x27;dialog-footer&#x27;]//span[contains(.,&#x27;确 定&#x27;)]&quot;)。
+INFO     web_log:BasePage.py:150 在获取添加提示页面等待元素(&#x27;xpath&#x27;, &quot;//p[contains(@class,&#x27;el-message__content&#x27;)]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.03800010681152344
+INFO     web_log:BasePage.py:172 在获取添加提示查找元素(&#x27;xpath&#x27;, &quot;//p[contains(@class,&#x27;el-message__content&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取添加提示页面获取元素(&#x27;xpath&#x27;, &quot;//p[contains(@class,&#x27;el-message__content&#x27;)]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:新增成功
+INFO     web_log:BasePage.py:133 在获取列表第一行银行名称等待元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[1]//div&#x27;)可见。
+INFO     web_log:BasePage.py:150 在获取列表第一行银行名称页面等待元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[1]//div&#x27;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.019999980926513672
+INFO     web_log:BasePage.py:172 在获取列表第一行银行名称查找元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[1]//div&#x27;)可见。
+INFO     web_log:BasePage.py:251 在获取列表第一行银行名称页面获取元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[1]//div&#x27;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:dakebankname
+INFO     web_log:BasePage.py:133 在获取列表第一行机构代码等待元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[2]//div&#x27;)可见。
+INFO     web_log:BasePage.py:150 在获取列表第一行机构代码页面等待元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[2]//div&#x27;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.023999929428100586
+INFO     web_log:BasePage.py:172 在获取列表第一行机构代码查找元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[2]//div&#x27;)可见。
+INFO     web_log:BasePage.py:251 在获取列表第一行机构代码页面获取元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[2]//div&#x27;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:dakecode<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_06_bank_page.py::TestBank::test03_enter_organization</td>
+          <td class="col-duration">1.64</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击银行管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;银行管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击银行管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;银行管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击进入下级机构页面查找元素(&#x27;xpath&#x27;, &quot;//tbody/tr[1]//td[4]//span[text()=&#x27;下级机构&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击进入下级机构页面点击元素(&#x27;xpath&#x27;, &quot;//tbody/tr[1]//td[4]//span[text()=&#x27;下级机构&#x27;]&quot;)。
+INFO     web_log:BasePage.py:150 在获取上级机构名称页面等待元素(&#x27;xpath&#x27;, &quot;//p[text()=&#x27;上级机构：&#x27;]/following-sibling::p&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.02500009536743164
+INFO     web_log:BasePage.py:172 在获取上级机构名称查找元素(&#x27;xpath&#x27;, &quot;//p[text()=&#x27;上级机构：&#x27;]/following-sibling::p&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取上级机构名称页面获取元素(&#x27;xpath&#x27;, &quot;//p[text()=&#x27;上级机构：&#x27;]/following-sibling::p&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:dakebankname
+INFO     web_log:BasePage.py:150 在获取机构代码页面等待元素(&#x27;xpath&#x27;, &quot;//p[text()=&#x27;机构代码：&#x27;]/following-sibling::p&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.010999917984008789
+INFO     web_log:BasePage.py:172 在获取机构代码查找元素(&#x27;xpath&#x27;, &quot;//p[text()=&#x27;机构代码：&#x27;]/following-sibling::p&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取机构代码页面获取元素(&#x27;xpath&#x27;, &quot;//p[text()=&#x27;机构代码：&#x27;]/following-sibling::p&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:dakecode<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_06_bank_page.py::TestBank::test04_add_organization_bank</td>
+          <td class="col-duration">4.22</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击银行管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;银行管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击银行管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;银行管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击进入下级机构页面查找元素(&#x27;xpath&#x27;, &quot;//tbody/tr[1]//td[4]//span[text()=&#x27;下级机构&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击进入下级机构页面点击元素(&#x27;xpath&#x27;, &quot;//tbody/tr[1]//td[4]//span[text()=&#x27;下级机构&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击新增银行按钮查找元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;bankmanagewrap&#x27;]//button[1]//span[1]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击新增银行按钮点击元素(&#x27;xpath&#x27;, &quot;//div[@class=&#x27;bankmanagewrap&#x27;]//button[1]//span[1]&quot;)。
+INFO     web_log:BasePage.py:172 在在文本框中输入银行名称查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;name&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在在文本框中输入银行名称对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;name&#x27;]/following-sibling::div//input&quot;)输入信息dakebankname01。
+INFO     web_log:BasePage.py:172 在在文本框中输入机构代码查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;bankNo&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在在文本框中输入机构代码对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;bankNo&#x27;]/following-sibling::div//input&quot;)输入信息dake01。
+INFO     web_log:BasePage.py:172 在在文本框中输入省市代码查找元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;provinceCode&#x27;]/following-sibling::div//input&quot;)可见。
+INFO     web_log:BasePage.py:230 在在文本框中输入省市代码对元素(&#x27;xpath&#x27;, &quot;//label[@for=&#x27;provinceCode&#x27;]/following-sibling::div//input&quot;)输入信息shenzhen1。
+INFO     web_log:BasePage.py:172 在点击确定按钮查找元素(&#x27;xpath&#x27;, &quot;//span[@class=&#x27;dialog-footer&#x27;]//span[contains(.,&#x27;确 定&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击确定按钮点击元素(&#x27;xpath&#x27;, &quot;//span[@class=&#x27;dialog-footer&#x27;]//span[contains(.,&#x27;确 定&#x27;)]&quot;)。
+INFO     web_log:BasePage.py:150 在获取添加提示页面等待元素(&#x27;xpath&#x27;, &quot;//p[contains(@class,&#x27;el-message__content&#x27;)]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.03800010681152344
+INFO     web_log:BasePage.py:172 在获取添加提示查找元素(&#x27;xpath&#x27;, &quot;//p[contains(@class,&#x27;el-message__content&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取添加提示页面获取元素(&#x27;xpath&#x27;, &quot;//p[contains(@class,&#x27;el-message__content&#x27;)]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:新增成功
+INFO     web_log:BasePage.py:133 在获取列表第一行银行名称等待元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[1]//div&#x27;)可见。
+INFO     web_log:BasePage.py:150 在获取列表第一行银行名称页面等待元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[1]//div&#x27;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.006000041961669922
+INFO     web_log:BasePage.py:172 在获取列表第一行银行名称查找元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[1]//div&#x27;)可见。
+INFO     web_log:BasePage.py:251 在获取列表第一行银行名称页面获取元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[1]//div&#x27;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:dakebankname01
+INFO     web_log:BasePage.py:133 在获取列表第一行机构代码等待元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[2]//div&#x27;)可见。
+INFO     web_log:BasePage.py:150 在获取列表第一行机构代码页面等待元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[2]//div&#x27;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.015999794006347656
+INFO     web_log:BasePage.py:172 在获取列表第一行机构代码查找元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[2]//div&#x27;)可见。
+INFO     web_log:BasePage.py:251 在获取列表第一行机构代码页面获取元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[2]//div&#x27;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:dake01<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_06_bank_page.py::TestBank::test05_del_organization_bank</td>
+          <td class="col-duration">23.56</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击银行管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;银行管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击银行管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;银行管理&#x27;]&quot;)。<br/> ------------------------------Captured stderr call------------------------------ <br/>2019-11-25 11:35:06,138 - [ERROR] - 元素不存在！ - if_ele_is_exist - 141
+Traceback (most recent call last):
+  File &quot;D:\Web_framework\Common\BasePage.py&quot;, line 135, in if_ele_is_exist
+    WebDriverWait(self.driver, timeout, frequency).until(EC.presence_of_element_located(loc))
+  File &quot;D:\Python37\lib\site-packages\selenium\webdriver\support\wait.py&quot;, line 80, in until
+    raise TimeoutException(message, screen, stacktrace)
+selenium.common.exceptions.TimeoutException: Message: 
+
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击进入下级机构页面查找元素(&#x27;xpath&#x27;, &quot;//tbody/tr[1]//td[4]//span[text()=&#x27;下级机构&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击进入下级机构页面点击元素(&#x27;xpath&#x27;, &quot;//tbody/tr[1]//td[4]//span[text()=&#x27;下级机构&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击列表第一行操作列的删除按钮查找元素(&#x27;xpath&#x27;, &quot;//tbody/tr[1]//td[4]//span[text()=&#x27;删除&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击列表第一行操作列的删除按钮点击元素(&#x27;xpath&#x27;, &quot;//tbody/tr[1]//td[4]//span[text()=&#x27;删除&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击删除确定按钮查找元素(&#x27;xpath&#x27;, &quot;//button//span[contains(.,&#x27;确定&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击删除确定按钮点击元素(&#x27;xpath&#x27;, &quot;//button//span[contains(.,&#x27;确定&#x27;)]&quot;)。
+INFO     web_log:BasePage.py:150 在获取删除提示信息页面等待元素(&#x27;xpath&#x27;, &quot;//p[contains(@class,&#x27;el-message__content&#x27;)]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.020999908447265625
+INFO     web_log:BasePage.py:172 在获取删除提示信息查找元素(&#x27;xpath&#x27;, &quot;//p[contains(@class,&#x27;el-message__content&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取删除提示信息页面获取元素(&#x27;xpath&#x27;, &quot;//p[contains(@class,&#x27;el-message__content&#x27;)]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:删除成功
+INFO     web_log:BasePage.py:133 在获取列表第一行银行名称等待元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[1]//div&#x27;)可见。
+INFO     web_log:BasePage.py:300 截图文件保存在：D:\Web_framework\Outputs\screenshots，文件名为2019-11-25 11-35-05_获取列表第一行银行名称.png
+ERROR    web_log:BasePage.py:141 元素不存在！
+Traceback (most recent call last):
+  File &quot;D:\Web_framework\Common\BasePage.py&quot;, line 135, in if_ele_is_exist
+    WebDriverWait(self.driver, timeout, frequency).until(EC.presence_of_element_located(loc))
+  File &quot;D:\Python37\lib\site-packages\selenium\webdriver\support\wait.py&quot;, line 80, in until
+    raise TimeoutException(message, screen, stacktrace)
+selenium.common.exceptions.TimeoutException: Message:<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_06_bank_page.py::TestBank::test06_del_bank</td>
+          <td class="col-duration">3.43</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -------------------------------Captured log setup------------------------------- <br/>INFO     web_log:BasePage.py:172 在输入账号查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入账号对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入登录手机号&#x27;]&quot;)输入信息13266816551。
+INFO     web_log:BasePage.py:172 在输入密码查找元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:230 在输入密码对元素(&#x27;xpath&#x27;, &quot;//input[@placeholder=&#x27;请输入密码&#x27;]&quot;)输入信息123456。
+INFO     web_log:BasePage.py:172 在点击登录按钮查找元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击登录按钮点击元素(&#x27;xpath&#x27;, &quot;//button[@class = &#x27;el-button el-button--primary&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击银行管理菜单查找元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;银行管理&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击银行管理菜单点击元素(&#x27;xpath&#x27;, &quot;//span[text() = &#x27;银行管理&#x27;]&quot;)。<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     web_log:BasePage.py:172 在点击列表第一行操作列删除按钮查找元素(&#x27;xpath&#x27;, &quot;//tbody/tr[1]//td[4]//span[text()=&#x27;删除&#x27;]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击列表第一行操作列删除按钮点击元素(&#x27;xpath&#x27;, &quot;//tbody/tr[1]//td[4]//span[text()=&#x27;删除&#x27;]&quot;)。
+INFO     web_log:BasePage.py:172 在点击删除确定按钮查找元素(&#x27;xpath&#x27;, &quot;//button//span[contains(.,&#x27;确定&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:214 在点击删除确定按钮点击元素(&#x27;xpath&#x27;, &quot;//button//span[contains(.,&#x27;确定&#x27;)]&quot;)。
+INFO     web_log:BasePage.py:150 在获取删除提示信息页面等待元素(&#x27;xpath&#x27;, &quot;//p[contains(@class,&#x27;el-message__content&#x27;)]&quot;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.040000200271606445
+INFO     web_log:BasePage.py:172 在获取删除提示信息查找元素(&#x27;xpath&#x27;, &quot;//p[contains(@class,&#x27;el-message__content&#x27;)]&quot;)可见。
+INFO     web_log:BasePage.py:251 在获取删除提示信息页面获取元素(&#x27;xpath&#x27;, &quot;//p[contains(@class,&#x27;el-message__content&#x27;)]&quot;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:删除成功
+INFO     web_log:BasePage.py:133 在获取列表第一行银行名称等待元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[1]//div&#x27;)可见。
+INFO     web_log:BasePage.py:150 在获取列表第一行银行名称页面等待元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[1]//div&#x27;)存在。
+INFO     web_log:BasePage.py:163 等待时长为：0.023999929428100586
+INFO     web_log:BasePage.py:172 在获取列表第一行银行名称查找元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[1]//div&#x27;)可见。
+INFO     web_log:BasePage.py:251 在获取列表第一行银行名称页面获取元素(&#x27;xpath&#x27;, &#x27;//tbody/tr[1]//td[1]//div&#x27;)的文本值。
+INFO     web_log:BasePage.py:262 获取到的元素文本内容为:21331<br/></div></td></tr></tbody></table></body></html>
